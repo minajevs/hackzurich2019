@@ -35,6 +35,22 @@ export type PointerEvent = {
     y: number
 }
 
+const keyCodes = {
+    'ctrl': 17,
+    'shift': 16,
+    'op_sq_brct': 219,
+    'i': 73,
+    'x': 88
+}
+
+const _combos = {
+    'FOLD': ['ctrl', 'shift', 'op_sq_brct'],
+    'SELECT_LINE': ['ctrl', 'i'],
+    'CUT_LINE': ['ctrl', 'x'],
+}
+
+type Keys = keyof typeof keyCodes
+
 class GestureDetector {
     ws: WebSocket
     events: EventEmitter
@@ -123,16 +139,31 @@ class GestureDetector {
         }))
     }
 
+    sendKeys = (combos: string) => {
+        const combosArray = combos.split(',')
+        combosArray.map((x) => {
+            const keys = _combos[x as keyof typeof _combos]
+
+            keys.map(y => this.sendKey(y as Keys, true))
+            keys.reverse().map(y => this.sendKey(y as Keys, false))
+        })
+    }
+
+    private sendKey = (key: Keys, down: boolean) => {
+        this.ws.send(JSON.stringify({
+            verb: 'send_input',
+            path: 'key',
+            args: { vkey: keyCodes[key], pressed: down }
+        }));
+
+    }
+
     loadDevices = () => {
         this.ws.send(JSON.stringify({
             verb: 'get',
             path: 'devices'
         }))
     }
-}
-
-const getTouch = () => {
-
 }
 
 export default GestureDetector

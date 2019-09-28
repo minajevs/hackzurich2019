@@ -3,8 +3,9 @@ import GestureDetector, { Device } from './gestureDetector'
 import createStoreContext from 'react-concise-state'
 
 type Gesture = {
-    desc: string,
-    id: number
+    description: string,
+    direction: string,
+    bindTo: string
 }
 
 type Pos = {
@@ -37,24 +38,7 @@ const getDirection = (begin: Pos, end: Pos) => {
 }
 
 const [context, Provider] = createStoreContext({
-    gestures: [
-        {
-            id: 0,
-            desc: "Wheel + ⟶"
-        },
-        {
-            id: 1,
-            desc: "Wheel + ⟵"
-        },
-        {
-            id: 2,
-            desc: "Wheel + ↑"
-        },
-        {
-            id: 3,
-            desc: "Wheel + ↓"
-        },
-    ] as Gesture[],
+    gestures: [] as Gesture[],
     loading: false,
     devices: null as Device[] | null,
     tap: false,
@@ -75,6 +59,11 @@ const [context, Provider] = createStoreContext({
         })
         meta.detector.events.addListener('pointer', (props: { x: number, y: number }) => {
             pos = { x: props.x, y: props.y, time: Date.now() }
+        });
+
+        (window as any).ipcRenderer.on('gestures-list', (event: any, gestures: any) => {
+            console.log(gestures)
+            setState(prev => ({ ...prev, gestures }))
         })
     },
     setTouch: (touch: boolean) => {
@@ -83,6 +72,12 @@ const [context, Provider] = createStoreContext({
                 return { ...prev, tap: touch, begin: pos, end: null }
             }
             if (!touch && prev.tap) {
+                const direction = getDirection(prev.begin!, pos)
+                const gesture = prev.gestures.find(x => x.direction === direction)
+                if (gesture) {
+                    const keys = gesture.bindTo
+                    if (keys) meta.detector.sendKeys(keys)
+                }
                 return { ...prev, tap: touch, end: pos, swipe: getDirection(prev.begin!, pos) || '' }
             }
             return { ...prev, tap: touch }
@@ -91,6 +86,26 @@ const [context, Provider] = createStoreContext({
     loadDevices: async () => {
         setState(prev => ({ ...prev, loading: true }))
         meta.detector.loadDevices()
+    },
+    bindGesture: (direction: string, keys: string) => {
+        (window as any).ipcRenderer.send('gesture-bind', { direction, keys })
+        setState(prev => {
+            const newGestures = prev.gestures.map(x => {
+                if (x.direction === direction) return { ...x, bindTo: keys }
+                return { ...x }
+            })
+            return { ...prev, gestures: [...newGestures] }
+        })
+    },
+    unbindGesture: (direction: string) => {
+        (window as any).ipcRenderer.send('gesture-unbind', direction)
+        setState(prev => {
+            const newGestures = prev.gestures.map(x => {
+                if (x.direction === direction) return { ...x, bindTo: '' }
+                return { ...x }
+            })
+            return { ...prev, gestures: [...newGestures] }
+        })
     }
 }), {
     meta: { detector: new GestureDetector() }
