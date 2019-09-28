@@ -4,8 +4,7 @@ import createStoreContext from 'react-concise-state'
 export type Combo = {
     keys: string,
     countPressed: number,
-    lastUsage: string | null,
-    gesture: number | null
+    gesture: string | null
 }
 
 type Combos = {
@@ -13,23 +12,33 @@ type Combos = {
 }
 
 const [context, Provider] = createStoreContext({
-    combos: {} as Combos
+    combos: [] as Combo[]
 }, ({ state, setState }) => ({
-    addEvent: (key: string) =>
+    init: () => {
+        (window as any).ipcRenderer.on('shortcuts-list', (event: any, combos: any) => {
+            console.log(combos)
+            setState(prev => ({ ...prev, combos }))
+        })
+    },
+    deinit: () => {
+        (window as any).ipcRenderer.removeListener('shortcuts-list', (event: any, combos: any) => setState(prev => ({ ...prev, combos })));
+    },
+    bindGesture: (key: string, gesture: string) => {
         setState(prev => {
-            const combo: Combo = prev.combos[key] || { combo: key, count: 0, lastUsage: 'now', gesture: null }
-            return { ...prev, combos: { ...prev.combos, [key]: { ...combo, count: ++combo.countPressed } } }
-        }),
-    bindGesture: (key: string, gesture: number) => {
-        setState(prev => {
-            const combo: Combo = prev.combos[key]
-            return { ...prev, combos: { ...prev.combos, [key]: { ...combo, gesture } } }
+            const newCombos = prev.combos.map(x => {
+                if (x.keys === key) return { ...x, gesture: gesture }
+                return { ...x }
+            })
+            return { ...prev, combos: [...newCombos] }
         })
     },
     unbindGesture: (key: string) => {
         setState(prev => {
-            const combo: Combo = prev.combos[key]
-            return { ...prev, combos: { ...prev.combos, [key]: { ...combo, gesture: null } } }
+            const newCombos = prev.combos.map(x => {
+                if (x.keys === key) return { ...x, gesture: null }
+                return { ...x }
+            })
+            return { ...prev, combos: [...newCombos] }
         })
     }
 }))

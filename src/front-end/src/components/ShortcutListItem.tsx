@@ -5,6 +5,7 @@ import { List, ListItem, ListItemAvatar, ListItemText, Chip, Avatar, ListItemSec
 
 import { context } from '../modalContext'
 import { Combo, context as dataContext } from '../dataContext'
+import { context as gestureContext } from '../gestureContext'
 
 type Props = {
     combo: Combo
@@ -20,16 +21,18 @@ const useStyles = makeStyles({
 })
 
 const ShortcutListItem: React.FC<Props> = ({ combo }) => {
-    console.log(combo)
     const classes = useStyles()
     const modalStore = React.useContext(context)
     const dataStore = React.useContext(dataContext)
-    const isBind = combo.gesture !== null
+    const gestureStore = React.useContext(gestureContext)
+    const isBind = combo.gesture !== null && combo.gesture !== undefined && combo.gesture !== ''
 
     const handleClick = React.useCallback(() => {
-        isBind
-            ? dataStore.unbindGesture(combo.keys)
-            : modalStore.open(combo.keys)
+        if (!isBind) modalStore.open(combo.keys)
+        else {
+            dataStore.unbindGesture(combo.keys)
+            gestureStore.unbindGesture(combo.gesture!)
+        }
     }, [combo])
 
     return (

@@ -7,7 +7,8 @@ import Paper from '@material-ui/core/Paper'
 
 import { context } from '../modalContext'
 import { context as dataContext } from '../dataContext'
-import { Typography, Chip, ButtonGroup, Button } from '@material-ui/core'
+import { context as gestureContext } from '../gestureContext'
+import { Typography, Chip, ButtonGroup, Button, FormControl, InputLabel, Select, MenuItem } from '@material-ui/core'
 
 const useStyles = makeStyles({
     modal: {
@@ -20,6 +21,9 @@ const useStyles = makeStyles({
     },
     btnGroup: {
         margin: "10px 100px"
+    },
+    formControl: {
+        minWidth: 120
     }
 })
 
@@ -27,13 +31,22 @@ const BindModal: React.FC = () => {
     const classes = useStyles()
     const store = React.useContext(context)
     const dataStore = React.useContext(dataContext)
+    const gestureStore = React.useContext(gestureContext)
+
+    const [selectedGesture, setSelected] = React.useState('')
 
     const { currentCombo } = store
 
-    const save = React.useCallback((gesture: number) => {
-        dataStore.bindGesture(currentCombo || '', gesture)
-        store.close()
+    const handleChange = React.useCallback((event: any) => {
+        setSelected(event.target.value)
+        console.log(event.target.value)
     }, [currentCombo])
+
+    const save = React.useCallback(() => {
+        dataStore.bindGesture(currentCombo!, selectedGesture)
+        gestureStore.bindGesture(selectedGesture, currentCombo!)
+        store.close()
+    }, [currentCombo, selectedGesture])
 
     return (
         <Modal
@@ -49,11 +62,18 @@ const BindModal: React.FC = () => {
                     <Typography variant="h4" component="h1" className={classes.title} gutterBottom>
                         Bind <Chip label={"ctrl+" + store.currentCombo} color="primary" /> combo to:
                     </Typography>
-                    GESTURE SELECTOR
+                    <FormControl className={classes.formControl}>
+                        <InputLabel>Gesture</InputLabel>
+                        <Select
+                            value={selectedGesture}
+                            onChange={handleChange}
+                        >{gestureStore.gestures.filter(x => !x.bindTo).map(x => <MenuItem value={x.direction}>{x.description}</MenuItem>)}
+                        </Select>
+                    </FormControl>
                     <br />
                     <ButtonGroup variant="contained" className={classes.btnGroup}>
                         <Button color="secondary" onClick={store.close}>Cancel</Button>
-                        <Button color="primary" onClick={() => save(1)}>Save</Button>
+                        <Button color="primary" onClick={save}>Save</Button>
                     </ButtonGroup>
                 </Paper>
             </Fade>

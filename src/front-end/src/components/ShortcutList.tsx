@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { context } from '../dataContext'
 import { makeStyles } from '@material-ui/styles'
-import { useShortcutsListUpdated } from '../customHooks/shortcutList'
 
 import { List, ListItem, ListItemAvatar, ListItemText, Divider, Avatar, Typography } from '@material-ui/core'
 
@@ -13,27 +12,21 @@ const useStyles = makeStyles({
 })
 
 const ShortcutList: React.FC = () => {
-    const shortcuts = useShortcutsListUpdated()
-    // const { combos } = store
+    const store = React.useContext(context)
+    React.useEffect(() => {
+        store.init()
+        return store.deinit()
+    }, [])
+    console.log("COMBOS", store.combos)
     const classes = useStyles()
-
-    // React.useEffect(() => {
-    //     document.addEventListener('keypress', (event) => {
-    //         const keyName = event.key
-    //         store.addEvent(keyName)
-    //     })
-    // }, [])
-
-    // const sortedCombos = Object.values(combos).sort((a, b) => b.count - a.count)
-
     return (
         <List className={classes.list}>
-            {shortcuts.map(x => (<>
+            {store.combos.map(x => (<>
                 <ShortcutListItem combo={x} />
                 <Divider variant="inset" component="li" />
             </>
             ))}
-            {shortcuts.length === 0 ? <Typography>No actions yet</Typography> : null}
+            {store.combos.length === 0 ? <Typography>No actions yet</Typography> : null}
         </List>
     )
 }

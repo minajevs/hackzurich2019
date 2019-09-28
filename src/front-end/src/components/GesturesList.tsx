@@ -44,9 +44,9 @@ const GesturesList: React.FC = () => {
         <DeviceList />
         <List className={classes.list}>
             {gestures.map(x => (<>
-                <ListItem key={x.desc}>
+                <ListItem key={x.direction}>
                     <ListItemText>
-                        <Chip size="small" label={x.desc} color="secondary" />
+                        <Chip size="small" label={x.description} color={x.bindTo ? 'secondary' : 'primary'} />
                     </ListItemText>
                 </ListItem>
             </>
