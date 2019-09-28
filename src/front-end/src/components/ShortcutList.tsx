@@ -17,7 +17,6 @@ const ShortcutList: React.FC = () => {
         store.init()
         return store.deinit()
     }, [])
-    console.log("COMBOS", store.combos)
     const classes = useStyles()
     return (
         <List className={classes.list}>
