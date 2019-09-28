@@ -1,5 +1,5 @@
 const mongoose = require("mongoose");
-const { ipcMain } = require("electron");
+const toaster = require("../services/toaster");
 
 const shortcutSchema = new mongoose.Schema({
   keys: { type: String, required: true, unique: true },
@@ -14,18 +14,24 @@ const gestureSchema = new mongoose.Schema({
 });
 
 let hookHandler = null;
-let gestureHandler = null
+let gestureHandler = null;
 
 shortcutSchema.post("save", async function callback(doc) {
-  return hookHandler && (await hookHandler());
+  return hookHandler && (await hookHandler(doc));
 });
 
 shortcutSchema.post("findOneAndUpdate", async function callback(doc) {
-  return hookHandler && (await hookHandler());
+  return hookHandler && (await hookHandler(doc));
 });
 
-gestureSchema.post("save", async (doc) => gestureHandler && await gestureHandler());
-gestureSchema.post("findOneAndUpdate", async (doc) => gestureHandler && await gestureHandler());
+gestureSchema.post(
+  "save",
+  async doc => gestureHandler && (await gestureHandler())
+);
+gestureSchema.post(
+  "findOneAndUpdate",
+  async doc => gestureHandler && (await gestureHandler())
+);
 
 const ShortcutModel = mongoose.model("Shortcut", shortcutSchema);
 const GestureModel = mongoose.model("Gesture", gestureSchema);
@@ -36,13 +42,13 @@ const saveGesture = async model => new GestureModel(model).save();
 const getShortcutById = async id => ShortcutModel.findOne({ _id: id });
 
 const getAllShortcutsDescending = async () =>
-  ShortcutModel.find({}, { _id: 0, keys: 1, countPressed: 1, gesture: 1 }).sort({
-    countPressed: -1
-  });
+  ShortcutModel.find({}, { _id: 0, keys: 1, countPressed: 1, gesture: 1 }).sort(
+    {
+      countPressed: -1
+    }
+  );
 
-
-const getGestures = async () =>
-  GestureModel.find({});
+const getGestures = async () => GestureModel.find({});
 
 const increaseCountByOne = async keys =>
   ShortcutModel.findOneAndUpdate(
@@ -57,7 +63,8 @@ const bindShortcut = async (direction, keys) =>
     { gesture: direction },
     { upsert: true, setDefaultsOnInsert: true, useFindAndModify: false }
   );
-const unbindShortcut = async (direction) =>
+
+const unbindShortcut = async direction =>
   ShortcutModel.findOneAndUpdate(
     { gesture: direction },
     { gesture: null },
@@ -69,7 +76,7 @@ const bindGesture = async (direction, keys) =>
     { direction },
     { bindTo: keys },
     { upsert: true, setDefaultsOnInsert: true, useFindAndModify: false }
-  )
+  );
 
 module.exports = {
   save,
@@ -83,7 +90,7 @@ module.exports = {
   unbindShortcut,
 
   attachNewShortcutsEmitter: emitter => {
-    hookHandler = async function (doc, next) {
+    hookHandler = async function(doc, next) {
       const shortcuts = await getAllShortcutsDescending();
       console.log(shortcuts);
       emitter(
@@ -93,11 +100,12 @@ module.exports = {
           gesture
         }))
       );
+      doc && (doc.countPressed + 1) % 5 === 0 && toaster.notify()
     };
   },
 
   attachNewGesturesEmitter: emitter => {
-    hookHandler = async function (doc, next) {
+    hookHandler = async function(doc, next) {
       const gestures = await getGestures();
       console.log(gestures);
       emitter(

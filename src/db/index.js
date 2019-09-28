@@ -3,7 +3,7 @@ mongoose.Promise = global.Promise;
 
 const connect = () => {
   mongoose.connect("mongodb://localhost:27017/db", { useNewUrlParser: true });
-  mongoose.connection.on("error", () => {
+mongoose.connection.on("error", () => {
     console.error(
       "error",
       "MongoDB connection error. Please make sure MongoDB is running."

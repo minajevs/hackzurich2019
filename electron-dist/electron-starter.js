@@ -4,23 +4,34 @@ exports.__esModule = true;
 const electron_1 = require("electron");
 const backEnd = require("../src/index.js");
 const Shortcut = require("../src/models/Shortcut");
+const toaster = require("../src/services/toaster");
 const path = require("path");
 
 const updateShortcuts = async () => {
-  (topic => shortcuts => mainWindow.webContents.send(topic, shortcuts))('shortcuts-list')((await Shortcut.getAllShortcutsDescending()).map(({ _doc: { countPressed, keys, gesture } }) => ({
-    countPressed,
-    keys,
-    gesture
-  })))
-}
+  (topic => shortcuts => mainWindow.webContents.send(topic, shortcuts))(
+    "shortcuts-list"
+  )(
+    (await Shortcut.getAllShortcutsDescending()).map(
+      ({ _doc: { countPressed, keys, gesture } }) => ({
+        countPressed,
+        keys,
+        gesture
+      })
+    )
+  );
+};
 
 const updateGestures = async () => {
-  (topic => gestures => mainWindow.webContents.send(topic, gestures))('gestures-list')((await Shortcut.getGestures()).map(({ _doc }) => ({
-    direction: _doc.direction,
-    description: _doc.description,
-    bindTo: _doc.bindTo
-  })))
-}
+  (topic => gestures => mainWindow.webContents.send(topic, gestures))(
+    "gestures-list"
+  )(
+    (await Shortcut.getGestures()).map(({ _doc }) => ({
+      direction: _doc.direction,
+      description: _doc.description,
+      bindTo: _doc.bindTo
+    }))
+  );
+};
 
 let mainWindow;
 const createWindow = async () => {
@@ -36,40 +47,47 @@ const createWindow = async () => {
   mainWindow.loadURL("http://localhost:3000");
 
   // zhopa is called when APP is ready to be rendered
-  electron_1.ipcMain.on('zhopa', () => {
-    updateShortcuts()
-    updateGestures()
-  })
+  electron_1.ipcMain.on("zhopa", () => {
+    updateShortcuts();
+    updateGestures();
+  });
 
-  electron_1.ipcMain.on('gesture-bind', (event, { direction, keys }) => {
-    Shortcut.bindGesture(direction, keys)
-    Shortcut.bindShortcut(direction, keys)
-  })
+  electron_1.ipcMain.on("gesture-bind", (event, { direction, keys }) => {
+    Shortcut.bindGesture(direction, keys);
+    Shortcut.bindShortcut(direction, keys);
+  });
 
-  electron_1.ipcMain.on('gesture-unbind', (event, direction) => {
-    Shortcut.bindGesture(direction, null)
-    Shortcut.unbindShortcut(direction)
-  })
+  electron_1.ipcMain.on("gesture-unbind", (event, direction) => {
+    Shortcut.bindGesture(direction, null);
+    Shortcut.unbindShortcut(direction);
+  });
 
-  mainWindow.on("closed", function () {
+  mainWindow.on("closed", function() {
     mainWindow = null;
   });
-}
+};
 
-electron_1.app.on("ready", function () {
+electron_1.app.on("ready", function() {
   console.log("init back");
   backEnd.init();
   Shortcut.attachNewShortcutsEmitter(
-    (topic => shortcuts => mainWindow.webContents.send(topic, shortcuts))('shortcuts-list')
+    (topic => shortcuts => mainWindow.webContents.send(topic, shortcuts))(
+      "shortcuts-list"
+    )
   );
-  Shortcut.attachNewGesturesEmitter(
-    (topic => gestures => mainWindow.webContents.send(topic, gestures))('gestures-list')
-  )
+//   Gesture.attachNewGesturesEmitter(
+//     (topic => gestures => mainWindow.webContents.send(topic, gestures))(
+//       "gestures-list"
+//     )
+//   );
   createWindow();
+  toaster.init(mainWindow)
 });
-electron_1.app.on("window-all-closed", function () {
+
+electron_1.app.on("window-all-closed", function() {
   if (process.platform !== "darwin") electron_1.app.quit();
 });
-electron_1.app.on("activate", function () {
+
+electron_1.app.on("activate", function() {
   if (mainWindow === null) createWindow();
 });
