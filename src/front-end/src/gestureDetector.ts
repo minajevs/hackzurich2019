@@ -39,14 +39,18 @@ const keyCodes = {
     'ctrl': 17,
     'shift': 16,
     'op_sq_brct': 219,
-    'i': 73,
+    'l': 76,
     'x': 88
 }
 
 const _combos = {
     'FOLD': ['ctrl', 'shift', 'op_sq_brct'],
-    'SELECT_LINE': ['ctrl', 'i'],
+    'SELECT_LINE': ['ctrl', 'l'],
     'CUT_LINE': ['ctrl', 'x'],
+}
+
+function sleep(ms: number) {
+    return new Promise(resolve => setTimeout(resolve, ms));
 }
 
 type Keys = keyof typeof keyCodes
@@ -139,23 +143,26 @@ class GestureDetector {
         }))
     }
 
-    sendKeys = (combos: string) => {
+    sendKeys = async (combos: string) => {
         const combosArray = combos.split(',')
-        combosArray.map((x) => {
-            const keys = _combos[x as keyof typeof _combos]
-
-            keys.map(y => this.sendKey(y as Keys, true))
-            keys.reverse().map(y => this.sendKey(y as Keys, false))
-        })
+        for (const combo of combosArray) {
+            const keys = _combos[combo as keyof typeof _combos]
+            for (const key of keys) {
+                await this.sendKey(key as Keys, true)
+            }
+            for (const key of keys.slice().reverse()) {
+                await this.sendKey(key as Keys, false)
+            }
+        }
     }
 
     private sendKey = (key: Keys, down: boolean) => {
+        console.log('send ' + key, down)
         this.ws.send(JSON.stringify({
             verb: 'send_input',
             path: 'key',
             args: { vkey: keyCodes[key], pressed: down }
         }));
-
     }
 
     loadDevices = () => {

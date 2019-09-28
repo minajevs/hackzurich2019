@@ -23,14 +23,10 @@ const App: React.FC = () => {
       </Typography>
     </Grid>
     <Grid item xs={8}>
-      <Paper>
-        <ShortcutList />
-      </Paper>
+      <ShortcutList />
     </Grid>
     <Grid item xs={4}>
-      <Paper>
-        <GesturesList />
-      </Paper>
+      <GesturesList />
     </Grid>
     <BindModal />
   </Grid>)

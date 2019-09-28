@@ -48,7 +48,7 @@ const createWindow = async () => {
 
   electron_1.ipcMain.on('gesture-unbind', (event, direction) => {
     Shortcut.bindGesture(direction, null)
-    Shortcut.bindShortcut(null, keys)
+    Shortcut.unbindShortcut(direction)
   })
 
   mainWindow.on("closed", function () {

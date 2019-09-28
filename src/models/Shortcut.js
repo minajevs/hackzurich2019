@@ -57,6 +57,12 @@ const bindShortcut = async (direction, keys) =>
     { gesture: direction },
     { upsert: true, setDefaultsOnInsert: true, useFindAndModify: false }
   );
+const unbindShortcut = async (direction) =>
+  ShortcutModel.findOneAndUpdate(
+    { gesture: direction },
+    { gesture: null },
+    { upsert: true, setDefaultsOnInsert: true, useFindAndModify: false }
+  );
 
 const bindGesture = async (direction, keys) =>
   GestureModel.findOneAndUpdate(
@@ -74,6 +80,7 @@ module.exports = {
   getGestures,
   bindGesture,
   bindShortcut,
+  unbindShortcut,
 
   attachNewShortcutsEmitter: emitter => {
     hookHandler = async function (doc, next) {
