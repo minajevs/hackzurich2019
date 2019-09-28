@@ -20,6 +20,7 @@ const useStyles = makeStyles({
 })
 
 const ShortcutListItem: React.FC<Props> = ({ combo }) => {
+    console.log(combo)
     const classes = useStyles()
     const modalStore = React.useContext(context)
     const dataStore = React.useContext(dataContext)
@@ -27,17 +28,17 @@ const ShortcutListItem: React.FC<Props> = ({ combo }) => {
 
     const handleClick = React.useCallback(() => {
         isBind
-            ? dataStore.unbindGesture(combo.combo)
-            : modalStore.open(combo.combo)
+            ? dataStore.unbindGesture(combo.keys)
+            : modalStore.open(combo.keys)
     }, [combo])
 
     return (
         <ListItem>
             <ListItemAvatar>
-                <Avatar>{combo.count}</Avatar>
+                <Avatar>{combo.countPressed}</Avatar>
             </ListItemAvatar>
             <ListItemText>
-                <Chip size="small" label={"ctrl+" + combo.combo} color="primary" />
+                <Chip size="small" label={combo.keys} color="primary" />
             </ListItemText>
             <ListItemSecondaryAction>
                 <Button variant="contained" className={isBind ? classes.btnUnbind : classes.btnBind} onClick={handleClick}>
