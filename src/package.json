@@ -1,0 +1,47 @@
+{
+  "name": "hackzurich-logi",
+  "version": "1.0.0",
+  "main": "server.js",
+  "scripts": {
+    "postinstall": "electron-rebuild",
+    "electron": " electron ../electron-dist/electron-starter.js",
+    "start:front": "cd ./front-end && yarn run start",
+    "start": "yarn run concurrently \"yarn run start:front\" \"electron .\""
+  },
+  "main": "../electron-dist/electron-starter.js",
+  "author": "",
+  "license": "MIT",
+  "iohook": {
+    "targets": [
+      "node-59",
+      "electron-73"
+    ],
+    "platforms": [
+      "win32",
+      "darwin"
+    ],
+    "arches": [
+      "x64",
+      "ia32"
+    ]
+  },
+  "cmake-js": {
+    "runtime": "electron",
+    "runtimeVersion": "6.0.10"
+  },
+  "dependencies": {
+    "electron": "^6.0.10",
+    "iohook": "^0.6.1",
+    "mongoose": "^5.7.1"
+  },
+  "devDependencies": {
+    "concurrently": "^4.1.2",
+    "electron-rebuild": "^1.8.6",
+    "eslint": "^6.4.0",
+    "eslint-config-airbnb-base": "^14.0.0",
+    "eslint-config-prettier": "^6.3.0",
+    "eslint-plugin-import": "^2.18.2",
+    "eslint-plugin-prettier": "^3.1.1",
+    "prettier": "^1.18.2"
+  }
+}
