@@ -8,8 +8,6 @@ import ShortcutListItem from './ShortcutListItem'
 
 const useStyles = makeStyles({
     list: {
-        border: '1px solid gray',
-        borderRadius: '12px'
     },
 })
 

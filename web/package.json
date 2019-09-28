@@ -40,6 +40,7 @@
   },
   "devDependencies": {
     "concurrently": "^4.1.2",
+    "copyfiles": "^2.1.1",
     "electron": "^6.0.10",
     "react-concise-state": "^1.2.0"
   }

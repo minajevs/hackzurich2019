@@ -6,6 +6,7 @@ import Container from '@material-ui/core/Container'
 import Typography from '@material-ui/core/Typography'
 import Box from '@material-ui/core/Box'
 import Grid from '@material-ui/core/Grid'
+import Paper from '@material-ui/core/Paper'
 
 import ShortcutList from './components/ShortcutList'
 import GesturesList from './components/GesturesList'
@@ -19,10 +20,14 @@ const App: React.FC = () => {
       </Typography>
     </Grid>
     <Grid item xs={8}>
-      <ShortcutList />
+      <Paper>
+        <ShortcutList />
+      </Paper>
     </Grid>
     <Grid item xs={4}>
-      <GesturesList />
+      <Paper>
+        <GesturesList />
+      </Paper>
     </Grid>
     <BindModal />
   </Grid>)

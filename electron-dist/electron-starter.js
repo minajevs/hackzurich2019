@@ -6,7 +6,7 @@ var mainWindow;
 function createWindow() {
     // Create the browser window.
     mainWindow = new electron_1.BrowserWindow({
-        width: 800,
+        width: 1000,
         height: 600
     });
     mainWindow.loadURL('http://localhost:3000');
