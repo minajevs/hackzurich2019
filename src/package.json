@@ -1,14 +1,13 @@
 {
   "name": "hackzurich-logi",
   "version": "1.0.0",
-  "main": "server.js",
+  "main": "../electron-dist/electron-starter.js",
   "scripts": {
     "postinstall": "electron-rebuild",
     "electron": " electron ../electron-dist/electron-starter.js",
     "start:front": "cd ./front-end && yarn run start",
     "start": "yarn run concurrently \"yarn run start:front\" \"electron .\""
   },
-  "main": "../electron-dist/electron-starter.js",
   "author": "",
   "license": "MIT",
   "iohook": {
@@ -32,7 +31,8 @@
   "dependencies": {
     "electron": "^6.0.10",
     "iohook": "^0.6.1",
-    "mongoose": "^5.7.1"
+    "mongoose": "^5.7.1",
+    "node-notifier": "^6.0.0"
   },
   "devDependencies": {
     "concurrently": "^4.1.2",

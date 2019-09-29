@@ -1,6 +1,7 @@
 body {
     background-color: #333;
-    color: #b5e853
+    color: #b5e853;
+    overflow-x: hidden;
 }
 
 h1{

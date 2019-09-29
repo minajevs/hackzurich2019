@@ -54,17 +54,25 @@ const [context, Provider] = createStoreContext({
             meta.detector.startTrackingTap(mouse.unitId)
             meta.detector.startTrackingPointer(mouse.unitId)
         })
+        meta.detector.events.addListener('open', () => {
+            this.loadDevices()
+        })
         meta.detector.events.addListener('tap', (props: { touch: boolean, mouseId: number }) => {
             this.setTouch(props.touch)
         })
         meta.detector.events.addListener('pointer', (props: { x: number, y: number }) => {
             pos = { x: props.x, y: props.y, time: Date.now() }
         });
+        meta.detector.events.addListener('connectionChanged', (props: { unitId: number, isConnected: boolean }) => {
+            console.log('LOAD ONCE AGAIN')
+            this.loadDevices()
+        });
 
         (window as any).ipcRenderer.on('gestures-list', (event: any, gestures: any) => {
             console.log(gestures)
             setState(prev => ({ ...prev, gestures }))
         })
+
     },
     setTouch: (touch: boolean) => {
         setState(prev => {
@@ -84,7 +92,6 @@ const [context, Provider] = createStoreContext({
         })
     },
     loadDevices: async () => {
-        setState(prev => ({ ...prev, loading: true }))
         meta.detector.loadDevices()
     },
     bindGesture: (direction: string, keys: string) => {

@@ -29,6 +29,11 @@ export type ThumbWheelEvent = {
     rotationStatus: number
 }
 
+export type ConnectionChangedEvent = {
+    unitId: number
+    isConnected: boolean
+}
+
 export type PointerEvent = {
     unitId: number,
     x: number,
@@ -83,6 +88,12 @@ class GestureDetector {
                 case 'pointer': {
                     const value: PointerEvent = message.value
                     this.events.emit('pointer', { ...value })
+                    break
+                }
+                case 'deviceConnectionChanged': {
+                    console.log('deviceConnectionChanged')
+                    const value: ConnectionChangedEvent = message.value
+                    this.events.emit('connectionChanged')
                     break
                 }
             }

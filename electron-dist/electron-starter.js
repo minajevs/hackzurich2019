@@ -37,13 +37,14 @@ let mainWindow;
 const createWindow = async () => {
   // Create the browser window.
   mainWindow = new electron_1.BrowserWindow({
-    width: 800,
+    width: 1000,
     height: 600,
+    title: 'Logitech MX Master dashboard',
     webPreferences: {
       preload: path.join(__dirname, "../src/preload.js")
     }
   });
-
+  mainWindow.setMenuBarVisibility(false)
   mainWindow.loadURL("http://localhost:3000");
 
   // zhopa is called when APP is ready to be rendered
@@ -62,12 +63,12 @@ const createWindow = async () => {
     Shortcut.unbindShortcut(direction);
   });
 
-  mainWindow.on("closed", function() {
+  mainWindow.on("closed", function () {
     mainWindow = null;
   });
 };
 
-electron_1.app.on("ready", function() {
+electron_1.app.on("ready", function () {
   console.log("init back");
   backEnd.init();
   Shortcut.attachNewShortcutsEmitter(
@@ -75,19 +76,19 @@ electron_1.app.on("ready", function() {
       "shortcuts-list"
     )
   );
-//   Gesture.attachNewGesturesEmitter(
-//     (topic => gestures => mainWindow.webContents.send(topic, gestures))(
-//       "gestures-list"
-//     )
-//   );
+  //   Gesture.attachNewGesturesEmitter(
+  //     (topic => gestures => mainWindow.webContents.send(topic, gestures))(
+  //       "gestures-list"
+  //     )
+  //   );
   createWindow();
   toaster.init(mainWindow)
 });
 
-electron_1.app.on("window-all-closed", function() {
+electron_1.app.on("window-all-closed", function () {
   if (process.platform !== "darwin") electron_1.app.quit();
 });
 
-electron_1.app.on("activate", function() {
+electron_1.app.on("activate", function () {
   if (mainWindow === null) createWindow();
 });

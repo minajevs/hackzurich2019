@@ -9,19 +9,19 @@ const notifier = new WindowsToaster({
 const notify = () => {
   notifier.notify(
     {
-      title: "Toasty",
-      message: "Toasty!!!!!!111)))0",
+      title: "Logitech MX Master dashboard",
+      message: "Hey, looks like you are using this keyboard combo frequently! Want to bind it to mouse gesture?",
       icon: path.join(
         __dirname,
-        "../kisspng-dan-forden-mortal-kombat-ii-mortal-kombat-3-mortal-5af5e57bd10d93.7564833915260645078563.jpg"
+        "../logo.png"
       ),
       sound: false,
       wait: true
     },
-    function(error, response) {
-        focusOnAppWindow.setAlwaysOnTop(true);
-        focusOnAppWindow.focus();
-        focusOnAppWindow.setAlwaysOnTop(false);
+    function (error, response) {
+      focusOnAppWindow.setAlwaysOnTop(true);
+      focusOnAppWindow.focus();
+      focusOnAppWindow.setAlwaysOnTop(false);
     }
   );
 };

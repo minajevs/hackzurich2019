@@ -36,6 +36,7 @@ const useStyles = makeStyles({
         color: '#63c0f5',
         textShadow: '0 0 5px rgba(104,182,255,0.5)',
         fontSize: '20px',
+        fontFamily: 'Monaco, "Bitstream Vera Sans Mono", "Lucida Console", Terminal, monospace',
         textDecorationLine: 'underline',
         textDecorationColor: '#63c0f5',
         cursor: 'pointer'
@@ -67,7 +68,7 @@ const ShortcutListItem: React.FC<Props> = ({ combo }) => {
     console.log(combo.keys.split(',').map(comboToKeys))
     const comboText = combo.keys.split(',').map(comboToKeys)
     const comboChips = comboText.map((rev, i) => (<>
-        <Chip size="small" label={rev} className={classes.puzir} />
+        <Chip size="small" label={rev} className={isBind ? classes.puzir : classes.puzir2} />
         {i + 1 < comboText.length
             ? <Typography style={{ display: 'inline-block', color: '#eaeaea', margin: '5px 5px' }}>   ⟶   </Typography>
             : null
@@ -76,7 +77,7 @@ const ShortcutListItem: React.FC<Props> = ({ combo }) => {
     return (
         <ListItem>
             <ListItemAvatar>
-                <Avatar className={classes.puzir}>{combo.countPressed}</Avatar>
+                <Avatar className={isBind ? classes.puzir : classes.puzir2}>{combo.countPressed}</Avatar>
             </ListItemAvatar>
             <ListItemText>
                 {comboChips}
