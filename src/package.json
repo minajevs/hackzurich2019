@@ -32,7 +32,7 @@
     "electron": "^6.0.10",
     "iohook": "^0.6.1",
     "mongoose": "^5.7.1",
-    "node-notifier": "^6.0.0"
+    "node-notifier": "^8.0.1"
   },
   "devDependencies": {
     "concurrently": "^4.1.2",
